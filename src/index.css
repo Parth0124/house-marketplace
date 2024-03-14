@@ -147,7 +147,7 @@ button {
 .navbar {
   position: fixed;
   left: 0;
-  bottom: 0;
+  bottom: 0; 
   right: 0;
   height: 85px;
   background-color: #ffffff;
@@ -158,18 +158,18 @@ button {
 }
 
 .navbarNav {
+  margin-top: 50%;
   width: 100%;
+  margin-top: 0.75rem;
   overflow-y: hidden;
 }
 
 .navbarListItems {
   margin: 0;
   padding: 0;
-  padding-left: 0px;
-  display: flex; /* Display horizontally */
+  display: flex;
   justify-content: space-evenly;
   align-items: center;
-  list-style-type: none;
 }
 
 .navbarListItem {
@@ -178,7 +178,6 @@ button {
   flex-direction: column;
   align-items: center;
 }
-
 
 .navbarListItemName,
 .navbarListItemNameActive {
@@ -826,4 +825,3 @@ button {
   font-size: 0.8rem;
   opacity: 0.75;
 }
-
