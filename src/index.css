@@ -159,16 +159,17 @@ button {
 
 .navbarNav {
   width: 100%;
-  margin-top: 0.75rem;
   overflow-y: hidden;
 }
 
 .navbarListItems {
   margin: 0;
   padding: 0;
-  display: flex;
+  padding-left: 0px;
+  display: flex; /* Display horizontally */
   justify-content: space-evenly;
   align-items: center;
+  list-style-type: none;
 }
 
 .navbarListItem {
@@ -177,6 +178,7 @@ button {
   flex-direction: column;
   align-items: center;
 }
+
 
 .navbarListItemName,
 .navbarListItemNameActive {
@@ -824,3 +826,4 @@ button {
   font-size: 0.8rem;
   opacity: 0.75;
 }
+
