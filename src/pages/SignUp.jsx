@@ -1,4 +1,7 @@
 function SignUp() {
+   
+  
+
   return (
     <div>
       <h1>Sign Up</h1>
