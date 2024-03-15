@@ -4,6 +4,7 @@ import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRig
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
 import {getAuth, createUserWithEmailAndPassword,  updateProfile} from 'firebase/auth'
 import {db} from '../firebase.config'
+import { setDoc, serverTimestamp, doc  } from "firebase/firestore"
 
 function SignUp() {
 
@@ -37,6 +38,12 @@ function SignUp() {
         updateProfile(auth.currentUser, {
           displayName:name
         })
+
+        const formDataCopy = {...formData}
+        delete formDataCopy.password
+        formDataCopy.timestamp = serverTimestamp()
+
+        await setDoc(doc(db, 'users', user.uid), formDataCopy)
 
         navigate('/ ')
     }catch(error) {
