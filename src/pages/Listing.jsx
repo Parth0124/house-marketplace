@@ -4,11 +4,10 @@ import { getDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
-import shareIcon from "../assets/svg/shareIcon.svg";
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/swiper-bundle.css'
-SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
+import shareIcon from "../assets/svg/shareIcon.svg"
+import 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Carousel } from 'react-bootstrap';
 
 
 function Listing() {
@@ -45,20 +44,18 @@ function Listing() {
 
   return (
     <main>
-      <Swiper slidesPerView={1} Pagination={{clickable: true}}>
+      <Carousel>
         {listing.imageUrls.map((url, index) => (
-          <SwiperSlide key={index}>
-            <div
-              style={{
-                background: `url(${listing.imageUrls[index]}) center no-repeat`,
-                backgroundSize: 'cover',
-              }}
-              className='swiperSlideDiv'
-            ></div>
-          </SwiperSlide>
+          <Carousel.Item key={index}>
+            <img
+              className="d-block w-100 "
+              src={url}
+              alt={`Slide ${index}`}
+              style={{ maxHeight: "550px", maxWidth: "60%", margin: "0 auto" }}
+            />
+          </Carousel.Item>
         ))}
-      </Swiper>
-
+      </Carousel>
 
       <div
         className="shareIconDiv"
