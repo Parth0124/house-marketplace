@@ -6,7 +6,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from 'firebase/storage'
-import { doc, updateDoc,getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { doc, updateDoc,getDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase.config'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -55,6 +55,14 @@ function EditListing() {
   const params = useParams()
   const isMounted = useRef(true)
 
+  useEffect(() => {
+    if(listing && listing.userRef !== auth.currentUser.uid)
+    {
+        toast.error("You can not edit that listing")
+        navigate('/')
+    }
+  })
+
 
   useEffect(() => {
     setLoading(true)
@@ -63,6 +71,7 @@ function EditListing() {
         const docSnap = await getDoc(docRef)
         if (docSnap.exists()) {
             setlisting(docSnap.data())
+            setFormData({...docSnap.data(), address: docSnap.data().location})
             setLoading(false)
         }
         else {
@@ -72,7 +81,7 @@ function EditListing() {
     }
 
     fetchListing()
-  }, [])
+  }, [params.listingId, navigate])
 
   useEffect(() => {
     if (isMounted) {
@@ -197,8 +206,8 @@ function EditListing() {
     delete formDataCopy.address
     !formDataCopy.offer && delete formDataCopy.discountedPrice
 
-    const docRef = await addDoc(collection(db, 'listing'), formDataCopy)
-    setLoading(false)
+    const docRef = doc(db, 'listing', params.listingId)
+    await updateDoc(docRef, formDataCopy)
     toast.success('Listing saved')
     navigate(`/category/${formDataCopy.type}/${docRef.id}`)
   }
@@ -366,33 +375,6 @@ function EditListing() {
             onChange={onMutate}
             required
           />
-
-          {/* {!geolocationEnabled && (
-            <div className='formLatLng flex'>
-              <div>
-                <label className='formLabel'>Latitude</label>
-                <input
-                  className='formInputSmall'
-                  type='number'
-                  id='latitude'
-                  value={latitude}
-                  onChange={onMutate}
-                  required
-                />
-              </div>
-              <div>
-                <label className='formLabel'>Longitude</label>
-                <input
-                  className='formInputSmall'
-                  type='number'
-                  id='longitude'
-                  value={longitude}
-                  onChange={onMutate}
-                  required
-                />
-              </div>
-            </div>
-          )} */}
 
           <label className='formLabel'>Offer</label>
           <div className='formButtons'>
