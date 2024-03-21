@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore'
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import { db } from '../firebase.config'
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import 'swiper/swiper-bundle.css'
 import Spinner from './Spinner'
-SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import { Carousel } from 'react-bootstrap';
 
 function Slider() {
   const [loading, setLoading] = useState(true)
-  const [listings, setListings] = useState(null)
+  const [listings, setListings] = useState([])
 
   const navigate = useNavigate()
 
@@ -20,16 +18,16 @@ function Slider() {
       const q = query(listingsRef, orderBy('timestamp', 'desc'), limit(5))
       const querySnap = await getDocs(q)
 
-      let listings = []
+      let fetchedListings = []
 
       querySnap.forEach((doc) => {
-        return listings.push({
+        fetchedListings.push({
           id: doc.id,
           data: doc.data(),
         })
       })
 
-      setListings(listings)
+      setListings(fetchedListings)
       setLoading(false)
     }
 
@@ -41,38 +39,37 @@ function Slider() {
   }
 
   if (listings.length === 0) {
-    return <></>
+    return null
   }
 
   return (
-    listings && (
-      <>
-        <p className='exploreHeading'>Recommended</p>
+    <>
+      <p className='exploreHeading'>Recommended</p>
 
-        <Swiper slidesPerView={1} pagination={{ clickable: true }}>
-          {listings.map(({ data, id }) => (
-            <SwiperSlide
-              key={id}
-              onClick={() => navigate(`/category/${data.type}/${id}`)}
+      <Carousel>
+        {listings.map(({ data, id }) => (
+          <Carousel.Item key={id} onClick={() => navigate(`/category/${data.type}/${id}`)}>
+            <div
+              style={{
+                maxHeight: "550px",
+                maxWidth: "60%",
+                margin: "0 auto",
+                backgroundImage: `url(${data.imageUrls[0]})`,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                height: '400px', // Adjust the height as needed
+              }}
+              className='d-block w-100'
             >
-              <div
-                style={{
-                  background: `url(${data.imageUrls[0]}) center no-repeat`,
-                  backgroundSize: 'cover',
-                }}
-                className='swiperSlideDiv'
-              >
-                <p className='swiperSlideText'>{data.name}</p>
-                <p className='swiperSlidePrice'>
-                  ${data.discountedPrice ?? data.regularPrice}{' '}
-                  {data.type === 'rent' && '/ month'}
-                </p>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </>
-    )
+              <Carousel.Caption >
+                <h3>{data.name}</h3>
+                <p>${data.discountedPrice ?? data.regularPrice} {data.type === 'rent' && '/ month'}</p>
+              </Carousel.Caption>
+            </div>
+          </Carousel.Item>
+        ))}
+      </Carousel>
+    </>
   )
 }
 
