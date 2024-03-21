@@ -7,6 +7,7 @@ import {
   where,
   orderBy,
   limit,
+  startAfter
 } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { toast } from "react-toastify";
@@ -19,6 +20,8 @@ function Offers() {
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
+
+  const [lastFetchedListing, setLastFetchedListing] = useState(null)
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -33,6 +36,9 @@ function Offers() {
         );
 
         const querySnap = await getDocs(q);
+
+        const lastVisible = querySnap.docs[querySnap.docs.length-1]
+        setLastFetchedListing(lastVisible)
 
         const listings = [];
 
@@ -51,6 +57,38 @@ function Offers() {
     };
     fetchListings();
   }, []);
+
+  const onFetchMoreListings = async () => {
+    try {
+      const listingsRef = collection(db, "listing");
+
+      const q = query(
+        listingsRef,
+        where("offer", "==", true),
+        orderBy("timestamp", "desc"),
+        limit(10)
+      );
+
+      const querySnap = await getDocs(q);
+
+      const lastVisible = querySnap.docs[querySnap.docs.length-1]
+      setLastFetchedListing(lastVisible)
+
+      const listings = [];
+
+      querySnap.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+
+      setListings(listings);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Couldn't fetch the listings");
+    }      
+  };
 
   return (
     <div className="category">
@@ -71,6 +109,15 @@ function Offers() {
                     ))}
                 </ul>
             </main>
+
+            <br />
+            <br/>
+
+            {lastFetchedListing && (
+              <p className="loadMore" onClick={onFetchMoreListings}>
+                Load More
+              </p>
+            )}
         </>
       ) : (
         <p>There are no current offers</p>
