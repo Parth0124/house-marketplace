@@ -6,8 +6,7 @@ import {
   query,
   where,
   orderBy,
-  limit,
-  startAfter
+  limit
 } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { toast } from "react-toastify";
